@@ -342,7 +342,9 @@ public class GameManager : NetworkBehaviour
     {
         foreach (var player in playerTransforms)
         {
-            if (!player.GetComponent<Ui>().time || !player.GetComponent<Ui>().bombImage) return;
+            if (!player)return;
+            if (!player.GetComponent<Ui>().time) return;
+            if  (!player.GetComponent<Ui>().bombImage) return;
             
             if (player && state == "bomb")
             {
