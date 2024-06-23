@@ -124,9 +124,40 @@ public class NetWorkPlayerControl : NetworkBehaviour
             SetMyLayer(child.gameObject);
         }
     }
+    
+    [ObserversRpc]
+    private void RpcBuyWeapon(int index,int type)
+    {
+        if (!IsOwner)
+        {
+            if (type == 1)
+            {
+                mainWeaponIndex = index;
+                _fpsController.ChangeWeapon(index);
+            }else if (type == 2)
+            {
+                secondWeaponIndex = index;
+                _fpsController.ChangeWeapon(index);
+            }else if (type == 3)
+            {
+                meleeWeaponIndex = index;
+                _fpsController.ChangeWeapon(index);
+            }
+
+        }
+    }
+
+    [ServerRpc]
+    private void CmdBuyWeapon(int index,int type)
+    {
+        RpcBuyWeapon(index,type);
+    }
+
 
     public void BuyWeapon(int index,int type)
     {
+        if (!IsOwner)return;
+            
         if (type == 1)
         {
             mainWeaponIndex = index;
@@ -140,6 +171,8 @@ public class NetWorkPlayerControl : NetworkBehaviour
             meleeWeaponIndex = index;
             _fpsController.ChangeWeapon(index);
         }
+
+        CmdBuyWeapon(index,type);
     }
     
     [ObserversRpc]

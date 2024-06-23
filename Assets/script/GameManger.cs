@@ -246,6 +246,7 @@ public class GameManager : NetworkBehaviour
                 NetWorkPlayerControl netWorkPlayerControl = playerTransforms[i].GetComponent<NetWorkPlayerControl>();
                 netWorkPlayerControl.SetMovement(false);
                 netWorkPlayerControl.InitializedPlayer(true);
+                netWorkPlayerControl.canPlant = false;
                 Health health = playerTransforms[i].GetComponent<Health>();
                 health.SetMaxHealth();
                 FPSController fpsController = playerTransforms[i].GetComponent<FPSController>();

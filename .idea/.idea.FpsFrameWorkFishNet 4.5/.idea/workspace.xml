@@ -6,7 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="a99b7598-10fc-414b-9a99-0ee59d8b961d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FpsFrameWorkFishNet 4.5/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FpsFrameWorkFishNet 4.5/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/LowPolyFPS6_Demo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/LowPolyFPS6_Demo.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/script/GameManger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/GameManger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/NetWorkPlayerControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/NetWorkPlayerControl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Item/Weapon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Item/Weapon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/Managed/Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/Managed/Assembly-CSharp.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/boot.config" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/boot.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/level0" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/level0" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,26 +42,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\tobby\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
-      "C:\\Users\\tobby\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
-      "C:\\Users\\tobby\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\tobby\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\tobby\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\tobby\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$PROJECT_DIR$/Hunter's FPS v0.1\Hunter's Fps.exe" />
@@ -118,6 +124,7 @@
       <workItem from="1718950806259" duration="72781000" />
       <workItem from="1719091090242" duration="44966000" />
       <workItem from="1719139513669" duration="1852000" />
+      <workItem from="1719141717881" duration="1204000" />
     </task>
     <servers />
   </component>

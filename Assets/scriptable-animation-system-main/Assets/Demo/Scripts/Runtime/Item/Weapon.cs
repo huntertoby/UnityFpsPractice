@@ -395,6 +395,8 @@ namespace Demo.Scripts.Runtime.Item
             {
                 if (!_netWorkPlayerControl.canPlant) return false;
 
+                if (_netWorkPlayerControl._gameManager._gameState == GameManager.State.BuyIng) return false;
+                    
                 if (_ui.doingSlider&&_ui.doingText)
                 {
                     _ui.doingSlider.SetActive(true);
@@ -446,6 +448,8 @@ namespace Demo.Scripts.Runtime.Item
         {
             if (_bomb && transform.root.GetComponent<NetworkObject>().IsOwner)
             {
+                if (_netWorkPlayerControl._gameManager._gameState == GameManager.State.BuyIng) return false;
+                
                 if (_ui.doingSlider&&_ui.doingText)
                 {
                     _ui.doingSlider.SetActive(false);
