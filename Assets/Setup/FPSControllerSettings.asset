@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9bd91fa31d045f79762a272fd5f0e61, type: 3}
+  m_Name: FPSControllerSettings
+  m_EditorClassIdentifier: 
+  rigAsset: {fileID: 11400000, guid: 460f04928b6c1414683ec6b0538e1c44, type: 2}
+  unarmedProfile: {fileID: 11400000, guid: e92f65457d7625246af96163fee3e78a, type: 2}
+  turnInPlaceAngle: 89
+  turnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  turnSpeed: 1.2
+  aimingMotion: {fileID: 0}
+  crouchingMotion: {fileID: 0}
+  jumpingMotion: {fileID: 0}
+  stopMotion: {fileID: 0}
+  leanMotion: {fileID: 0}
+  timeScale: 1
+  equipDelay: 0.8
+  leanAngle: 45
+  sensitivity: 1
+  weaponBone:
+    name: IK WeaponBone
+    index: 42
+    isVirtual: 0
+  weaponPrefabs:
+  - {fileID: 1758242504136440175, guid: 769bac2d29c2ac14aa8b4e6072ac6e81, type: 3}
+  - {fileID: 76050257980469280, guid: e93161c984a81f849a42e296e3f3ac27, type: 3}
+  - {fileID: 6728373456594992609, guid: 43d94650a36e30e44aa2f6b8e1fde3d5, type: 3}
+  - {fileID: 1388147484247270593, guid: 5a1d06af04d8de74294b3ef8742e4af3, type: 3}
+  - {fileID: 8052982428621083778, guid: 12853ea74e4c2e847a90fbd0e8abf4a3, type: 3}
+  - {fileID: 1885427682576077431, guid: eb619249d8147cf468f484ab999c6520, type: 3}
+  - {fileID: 7784203985894764556, guid: 7b7a281e5a01ad84f823bfdc621af807, type: 3}
+  - {fileID: 2414726200452146358, guid: f48b1111023a6a84282c06df9e05c49f, type: 3}
+  - {fileID: 7298520147246127020, guid: 61d0c10e0cb035d4185c6d08880cd69e, type: 3}
+  - {fileID: 8764305115101130495, guid: a612a992489d7404ea1bc3b9c589ba1f, type: 3}
+  - {fileID: 2871643447048969548, guid: e0df43872166e2a4fa465e310c0d7297, type: 3}
+  - {fileID: 3113586229621177156, guid: f0a01a1e481587a4a902e1c8c3d3bac0, type: 3}
