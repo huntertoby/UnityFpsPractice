@@ -17,6 +17,7 @@
 *.userprefs
 *.meta
 *.tmp
+.idea
 
 # need include the meta of file
 !*.*.meta
