@@ -15480,7 +15480,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5893581450392875506}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &5954294197628835540
 GameObject:
   m_ObjectHideFlags: 0
@@ -20042,7 +20042,6 @@ GameObject:
   - component: {fileID: 7025015431097783892}
   - component: {fileID: 282256632189141108}
   - component: {fileID: 7907324751300852545}
-  - component: {fileID: 6277023120830215139}
   - component: {fileID: 3633360871879930460}
   - component: {fileID: 9081501812631594865}
   m_Layer: 7
@@ -20288,7 +20287,6 @@ MonoBehaviour:
   - {fileID: 7025015431097783892}
   - {fileID: 282256632189141108}
   - {fileID: 7907324751300852545}
-  - {fileID: 6277023120830215139}
   - {fileID: 9081501812631594865}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
@@ -20337,6 +20335,7 @@ MonoBehaviour:
   _gameManager: {fileID: 0}
   money: 0
   team: 0
+  teamIndex: 0
   haveBomb: 0
   canPlant: 0
   mainWeaponIndex: 0
@@ -20367,8 +20366,8 @@ MonoBehaviour:
     Scale: 0
   _interpolation: 2
   _extrapolation: 2
-  _enableTeleport: 0
-  _teleportThreshold: 1
+  _enableTeleport: 1
+  _teleportThreshold: 3.4028235e+38
   _scaleThreshold: 1
   _clientAuthoritative: 1
   _sendToOwner: 1
@@ -20490,6 +20489,7 @@ MonoBehaviour:
   maxHealth: 30
   shield: 15
   maxShield: 15
+  isDied: 0
 --- !u!114 &7907324751300852545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20535,22 +20535,6 @@ MonoBehaviour:
   canUpdate: 0
   targetOffset: 10
   weapon: {fileID: 0}
---- !u!114 &6277023120830215139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7889271208200011229}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69716023774d021478ca3c2e36667874, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 8
-  _addedNetworkObject: {fileID: 8812436290391556083}
-  _networkObjectCache: {fileID: 8812436290391556083}
-  player: {fileID: 0}
 --- !u!114 &3633360871879930460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20598,7 +20582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 649a8bda148124740b7c98cdb93c612b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 9
+  _componentIndexCache: 8
   _addedNetworkObject: {fileID: 8812436290391556083}
   _networkObjectCache: {fileID: 8812436290391556083}
   layerMask:

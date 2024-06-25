@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Demo.Scripts.Runtime.Character;
+using FishNet;
 using FishNet.Object;
 using TMPro;
 using UnityEngine;
@@ -7,23 +9,21 @@ using UnityEngine.UI;
 
 public class GameManager : NetworkBehaviour
 {
-    [SerializeField] private Button severStartButton;
-    [SerializeField] private Button clientStartButton;
+    public static GameManager Instance { get; private set; }
     
-    [SerializeField] public Button[] attackerButton;
-    [SerializeField] public Button[] defenderButton;
-    [SerializeField] public TMP_InputField inputField;
-    [SerializeField] public Button prepare;
+
 
     [SerializeField] public GameObject teamUi;
-    [SerializeField] public GameObject startersUi;
 
-    [SerializeField] public Transform[] team1PlayerTransforms = new Transform[5];
-    [SerializeField] public Transform[] team2PlayerTransforms = new Transform[5];
+     public Transform[] team1PlayerTransforms = new Transform[5];
+     public Transform[] team2PlayerTransforms = new Transform[5];
+    
+     public Transform[] _attackerSpawnTransforms ;
+     public Transform[] _defenderSpawnTransforms ;
 
-    [SerializeField] public Button startButton;
+    
 
-    [HideInInspector] public bool gameStart = false;
+    
 
     [SerializeField] private AudioListener audioListener;
     
@@ -33,12 +33,12 @@ public class GameManager : NetworkBehaviour
     }
 
     private int _round;
-    private int _team1Win;
+    public int _team1Win;
     private TeamSide _team1Side;
-    private int _team1Person;
-    private int _team2Win;
+    public int _team1Person;
+    public int _team2Win;
     private TeamSide _team2Side; 
-    private int _team2Person;
+    public int _team2Person;
     
     [HideInInspector] public State _gameState;
     
@@ -57,247 +57,360 @@ public class GameManager : NetworkBehaviour
 
     private bool _timeOut;
 
-    public Bomb bomb;
+     private GameObject _bomb;
+
+    [SerializeField] private Canvas canvas;
     
-    void Start()
-    {
-        severStartButton.onClick.AddListener(ServerStart);
-        clientStartButton.onClick.AddListener(ClientStart);
-    }
+    private HashSet<int> _readyClients = new HashSet<int>();
 
-    private void ServerStart()
+    private bool _gameStarted = false;
+    
+    private void Awake()
     {
-        GameObject.Find("SeverStarter").GetComponent<SeverStarter>().enabled = true;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        
+        _attackerSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().attackerSpawnTransforms;
+        _defenderSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().defenderSpawnTransforms;
     }
-   
-    private void ClientStart()
+    
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdGameStart()
     {
-        GameObject.Find("SeverStarter").GetComponent<ClientStarter>().enabled = true;
+        ServerGameStart();
     }
-
-    public void GameStart()
+    [Server]
+    public void ServerGameStart()
     {
         time = buyingTime;
-        
-        Transform[] attackerSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().attackerSpawnTransforms;
-        Transform[] defenderSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().defenderSpawnTransforms;
-
-        _team1Side = TeamSide.Attacker;
-        _team2Side = TeamSide.Defender;
-        
-        InitializePlayers(team1PlayerTransforms, attackerSpawnTransforms, 1, ref _team1Person);
-        InitializePlayers(team2PlayerTransforms, defenderSpawnTransforms, 2, ref _team2Person);
-
-        GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
-        teamUi.SetActive(false);
-
+        SetTimeSide(TeamSide.Defender,TeamSide.Attacker);
         time = buyingTime;
         _gameState = State.BuyIng;
-        audioListener.enabled = false;
+        RpcGameStart();
+    }
+    
+    [Server]
+    private void SetTimeSide(TeamSide team1Side,TeamSide team2Side)
+    {
+        _team1Side = team1Side;
+        _team2Side = team2Side;
+        RpcGetTimeSide(_team1Side, _team2Side);
+    }
+    
+    [ObserversRpc]
+    private void RpcGetTimeSide(TeamSide team1Side,TeamSide team2Side)
+    {
+        _team1Side = team1Side;
+        _team2Side = team2Side;
+    }
+    
+    [ObserversRpc]
+    private void RpcGameStart()
+    {
+        var player = GameObject.Find("MyPlayer").transform;
+        var netWorkPlayerControl = player.GetComponent<NetWorkPlayerControl>();
+        CmdInitialaizeOtherPlayer(player, true);
+        netWorkPlayerControl.InitializedPlayer(true);
+        netWorkPlayerControl.SetMovement(false);
+        var ui = player.GetComponent<Ui>();
+        ui.SetGameUiActive(true);
+        ui.GetTimeUI();
+        canvas.enabled = false;
+        teamUi.SetActive(false);
+        AddServerPerson(netWorkPlayerControl.team,player);
+    }
+    
+    [Server]
+    private void ResetRound()
+    {
+        SetTimeSide(_team2Side,_team1Side);
         
-        GiveBomb();
-
-        Game();
+        _gameState = State.BuyIng;
+        
+        time = buyingTime ;
+        
+        _team1Person = 0;
+        _team2Person = 0;
+        
+        _readyClients = new HashSet<int>();
+        
+        RpcInitializePlayersForNewRound();
     }
 
-    private void InitializePlayers(Transform[] playerTransforms, Transform[] spawnTransforms, int team, ref int teamPersonCount)
+    [ObserversRpc]
+    private void RpcInitializePlayersForNewRound()
     {
-        for (int i = 0; i < playerTransforms.Length; i++)
+        var player = GameObject.Find("MyPlayer").transform;
+        var netWorkPlayerControl = player.GetComponent<NetWorkPlayerControl>();
+        var fpsController = player.GetComponent<FPSController>();
+        var health = player.GetComponent<Health>();
+        CmdInitialaizeOtherPlayer(player,true);
+        ResetBombStatus();
+        netWorkPlayerControl.SetMovement(false);
+        netWorkPlayerControl.canPlant = false;
+        netWorkPlayerControl.haveBomb = false;
+        var ui = player.GetComponent<Ui>();
+        ui.SetGameUiActive(true);
+        fpsController.ChangeWeapon(0);
+        fpsController.ResetWeaponAmmo();
+        CmdSetMaxHealth(player);
+        health.isDied = false;
+        SetPlayerSide(netWorkPlayerControl);
+        AddServerPerson(netWorkPlayerControl.team,player);
+    }
+
+    private void SetPlayerSide(NetWorkPlayerControl netWorkPlayerControl)
+    {
+        if (netWorkPlayerControl.team == 1) netWorkPlayerControl.playerSide = _team1Side;
+        else netWorkPlayerControl.playerSide = _team2Side;
+    }       
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void CmdInitialaizeOtherPlayer(Transform player,bool value)
+    {
+        RpcInitialaizeOtherPlayer(player, value);
+    }
+
+    [ObserversRpc]
+    private void RpcInitialaizeOtherPlayer(Transform player,bool value)
+    {
+        player.GetComponent<NetWorkPlayerControl>().InitializedPlayer(value);
+    }
+    
+    
+
+    [ServerRpc(RequireOwnership = false)]
+    public void AddServerPerson(int team,Transform player)
+    {
+        if (team == 1) _team1Person++;
+        if (team == 2) _team2Person++;
+        CmdClientReady(player.GetComponent<NetworkObject>().OwnerId,player);
+    }
+    
+    [Server]
+    public void CmdClientReady(int clientId,Transform player)
+    {
+        Debug.Log("CmdClientReady");
+        _readyClients.Add(clientId);
+        var netWorkPlayerControl = player.GetComponent<NetWorkPlayerControl>();
+        CheckAllClientsReady();
+    }
+    
+    [Server]
+    private void CheckAllClientsReady()
+    {
+        if (_readyClients.Count == ServerManager.Clients.Count && _gameStarted == false)
         {
-            if (playerTransforms[i])
-            {
-                playerTransforms[i].position = spawnTransforms[i].position;
-                NetWorkPlayerControl netWorkPlayerControl = playerTransforms[i].GetComponent<NetWorkPlayerControl>();
-                netWorkPlayerControl.InitializedPlayer(true);
-                netWorkPlayerControl.team = team;
-                netWorkPlayerControl.SetMovement(false);
-                Ui ui = playerTransforms[i].GetComponent<Ui>();
-                ui.SetGameManager();
-                ui.SetGameUiActive(true);
-                ui.TimeUI();
-                teamPersonCount++;
-            }
+            GiveBomb();
+            Game();
+            _gameStarted = true;
+            Debug.Log("Game");
+            CmdSetSpawnPlace();
+            
+        }else if(_readyClients.Count == ServerManager.Clients.Count)
+        {
+            GiveBomb();
+            _timeOut = false;
+            isBombExplosionOrDefused = false;
+            Debug.Log("NewRound");
+            CmdSetSpawnPlace();
         }
     }
 
-    public string GetTime()
+    [ObserversRpc]
+    private void CmdSetSpawnPlace()
+    {
+        var player = GameObject.Find("MyPlayer").GetComponent<Transform>();
+        var team = player.GetComponent<NetWorkPlayerControl>().team;
+        var teamIndex = player.GetComponent<NetWorkPlayerControl>().teamIndex;
+        
+        if (team == 1)
+        {
+            if (_team1Side == TeamSide.Attacker) RpcSetSpawnPlace(_attackerSpawnTransforms[teamIndex].position,player);
+            else RpcSetSpawnPlace(_defenderSpawnTransforms[teamIndex].position,player);
+        }
+        else
+        {
+            if (_team2Side == TeamSide.Attacker) RpcSetSpawnPlace(_attackerSpawnTransforms[teamIndex].position,player);
+            else RpcSetSpawnPlace(_defenderSpawnTransforms[teamIndex].position,player);
+        }
+    }
+    
+    private void RpcSetSpawnPlace(Vector3 spawnPosition,Transform player)
+    {
+        if (player.GetComponent<NetworkObject>().IsOwner) player.position = spawnPosition;
+    }
+    
+    
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void GetTime(Transform player)
+    {
+        ServerGetTime(player);
+    }
+    [Server]
+    public void ServerGetTime(Transform player)
     {
         float minutes = Mathf.FloorToInt(time / 60);
         float seconds = Mathf.FloorToInt(time % 60);
-        return string.Format("{0:00}:{1:00}", minutes, seconds);
+        RpcGetTime(player,string.Format("{0:00}:{1:00}", minutes, seconds));
+    }
+    [ObserversRpc] 
+    void RpcGetTime(Transform player,string timeText)
+    {
+        player.GetComponent<Ui>().SetTimeUI(timeText);
+    }
+    
+    
+    
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdDealDamage(Transform toWho, float damage)
+    {
+        Debug.Log(damage);
+        toWho.GetComponent<Health>().GotDamage(damage);
+        
+    }
+    [Server]
+    public void ServerDealDamage(Transform toWho, float damage)
+    {
+        toWho.GetComponent<Health>().GotDamage(damage);
+    }
+    
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdSetMaxHealth(Transform toWho)
+    {
+        toWho.GetComponent<Health>().ServerSetMaxHealth();
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdBombPlant(Transform whoPlant,GameObject bombPrefab)
+    {
+        ServerBombPlant(whoPlant, bombPrefab);
     }
 
+    [Server] void ServerBombPlant(Transform whoPlant,GameObject bombPrefab)
+    {
+        _bomb = Instantiate(bombPrefab,whoPlant.position,Quaternion.LookRotation(Vector3.up));
+        Spawn(_bomb);
+        _bomb.GetComponent<Bomb>().BombStart();
+        RpcSetPlayersTimeOrBombUi("bomb");
+        RpcGetBomb(_bomb.transform);
+    }
+    
+    [ObserversRpc]
+    private void RpcGetBomb(Transform bombTransform)
+    {
+        
+    }
+    
+    [ObserversRpc]
+    private void RpcSetPlayersTimeOrBombUi(string state)
+    {
+        var player = GameObject.Find("MyPlayer");
+        var ui = player.GetComponent<Ui>();
+        if (state == "bomb") ui.bombImage.enabled = true;
+        else ui.bombImage.enabled = false;
+        ui.time.enabled = !ui.bombImage.enabled;
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
     public void PlayerDie(int team)
+    {
+        SeverPlayerDie(team);
+    }
+    
+    [Server]
+    public void SeverPlayerDie(int team)
     {
         if (team == 1) _team1Person--;
         if (team == 2) _team2Person--;
         CheckWin();
     }
-
+    
+    
+    [Server]
     private void CheckWin()
     {
-        if (_isBombExplosionOrDefused)return;
+        if (isBombExplosionOrDefused)return;
         if ((_team1Person != 0 && _team2Person != 0) && !_timeOut) return;
+        if (_bomb && _team1Side == TeamSide.Defender && _team1Person != 0)return;
+        if (_bomb && _team2Side == TeamSide.Defender && _team2Person != 0)return;
+        Invoke(nameof(DespawnDestroyBomb),9f);
+        _bomb = null;
         if (_team1Person == 0) _team2Win++;
-        if (_team2Person == 0) _team1Win++;
+        else _team1Win++;
         _gameState = State.Wait;
-        time = waitTime + 1;
-        SetPlayerWin();
-        
-        SetPlayersTimeOrBombUi("Time");
-    }
-
-    private void SetPlayerWin()
-    {
-        UpdatePlayersUI(team1PlayerTransforms, _team1Win, _team2Win);
-        UpdatePlayersUI(team2PlayerTransforms, _team2Win, _team1Win);
-    }
-
-    private void UpdatePlayersUI(Transform[] playerTransforms, int teamWin, int otherTeamWin)
-    {
-        foreach (var player in playerTransforms)
-        {
-            if (player)
-            {
-                player.GetComponent<Ui>().SetTeamWin(teamWin.ToString(), otherTeamWin.ToString());
-            }
-        }
-    }
-
-    private void CloseBuyMenu()
-    {
-        SetPlayerUI(team1PlayerTransforms, false);
-        SetPlayerUI(team2PlayerTransforms, false);
-    }
-
-    private void SetPlayerUI(Transform[] playerTransforms, bool active)
-    {
-        foreach (var player in playerTransforms)
-        {
-            
-            if (player)
-            {
-                if (player.GetComponent<Ui>().buyMenu)
-                {
-                    player.GetComponent<Ui>().buyMenu.SetActive(active);
-                }
-            }
-        }
-    }
-
-    private void SetPlayerMove(bool value)
-    {
-        UpdatePlayerMovement(team1PlayerTransforms, value);
-        UpdatePlayerMovement(team2PlayerTransforms, value);
-    }
-
-    private void UpdatePlayerMovement(Transform[] playerTransforms, bool canMove)
-    {
-        foreach (var player in playerTransforms)
-        {
-            if (player)
-            {
-                player.GetComponent<NetWorkPlayerControl>().SetMovement(canMove);
-            }
-        }
-    }
-
-    private void ResetRound()
-    {
-        (_team1Side, _team2Side) = (_team2Side, _team1Side);
-        
-        // 重置攻擊方所有玩家的炸彈狀態
-        ResetBombStatus(team1PlayerTransforms);
-        ResetBombStatus(team2PlayerTransforms);
-        
-        time = buyingTime + 1;
-        
-        Transform[] attackerSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().attackerSpawnTransforms;
-        Transform[] defenderSpawnTransforms = GameObject.Find("Map").GetComponent<Map>().defenderSpawnTransforms;
-
-        _team1Person = 0;
-        _team2Person = 0;
-
-        if (_team1Side == TeamSide.Attacker)
-        {
-            InitializePlayersForNewRound(team1PlayerTransforms, attackerSpawnTransforms, 1, ref _team1Person);
-            InitializePlayersForNewRound(team2PlayerTransforms, defenderSpawnTransforms, 2, ref _team2Person);
-        }
-        else
-        {
-            InitializePlayersForNewRound(team1PlayerTransforms, defenderSpawnTransforms, 1, ref _team1Person);
-            InitializePlayersForNewRound(team2PlayerTransforms, attackerSpawnTransforms, 2, ref _team2Person);
-        }
-
-        GiveBomb();
-
-        _gameState = State.BuyIng;
-        _timeOut = false;
-        _isBombExplosionOrDefused = false;
+        time = waitTime;
+        RpcSetPlayerWin(_team1Win,_team2Win);
+        RpcSetPlayersTimeOrBombUi("Time");
     }
     
-    private void InitializePlayersForNewRound(Transform[] playerTransforms, Transform[] spawnTransforms, int team, ref int teamPersonCount)
+    [ObserversRpc]
+    private void RpcSetPlayerWin(int team1Win, int team2Win)
     {
-        for (int i = 0; i < playerTransforms.Length; i++)
-        {
-            if (playerTransforms[i])
-            {
-                playerTransforms[i].position = spawnTransforms[i].position;
-                NetWorkPlayerControl netWorkPlayerControl = playerTransforms[i].GetComponent<NetWorkPlayerControl>();
-                netWorkPlayerControl.SetMovement(false);
-                netWorkPlayerControl.InitializedPlayer(true);
-                netWorkPlayerControl.canPlant = false;
-                Health health = playerTransforms[i].GetComponent<Health>();
-                health.SetMaxHealth();
-                FPSController fpsController = playerTransforms[i].GetComponent<FPSController>();
-                fpsController.ChangeWeapon(0);
-                fpsController.ResetWeaponAmmo();
-                Ui ui = playerTransforms[i].GetComponent<Ui>();
-                ui.SetGameUiActive(true);
-                health.UpdateTwoBar();
-                teamPersonCount++;
-            }
-        }
-    }
+        var player = GameObject.Find("MyPlayer").GetComponent<NetWorkPlayerControl>();
+        var ui = player.GetComponent<Ui>();
+        if(player.team == 1)ui.SetTeamWin(team1Win.ToString(),team2Win.ToString()); 
+        if(player.team == 2)ui.SetTeamWin(team2Win.ToString(),team1Win.ToString());
+    }    
+    
 
-    private bool _isBombExplosionOrDefused;
-
-
-    public void BombExplosion()
+    [ObserversRpc]
+    private void CloseBuyMenu()
     {
-        if (_team1Side == TeamSide.Attacker) _team1Win++;
-        else _team2Win++;
-        SetPlayerWin();
-        _gameState = State.Wait;
-        time = waitTime + 1;
-        _isBombExplosionOrDefused = true;
-        
-        bomb = null;
-        
-        SetPlayersTimeOrBombUi("Time");
+        GameObject.Find("MyPlayer").GetComponent<Ui>().CloseBuyMenu();
     }
+    
+    [ObserversRpc]
+    private void SetPlayerMove(bool value)
+    {
+        GameObject.Find("MyPlayer").GetComponent<FPSMovement>().canMove = value;
+    }
+    
+    public bool isBombExplosionOrDefused;
+    
 
+    
+    [Server]
     private void GiveBomb()
     {
+        Debug.Log(_team1Side);
         // 確認攻擊方
         Transform[] attackerTransforms = _team1Side == TeamSide.Attacker ? team1PlayerTransforms : team2PlayerTransforms;
+        
+        Debug.Log(_team1Side == TeamSide.Attacker ? "team1PlayerTransforms" : "team2PlayerTransforms");
         
         // 攻擊方玩家數量
         int attackerCount = _team1Side == TeamSide.Attacker ? _team1Person : _team2Person;
 
+        Debug.Log(attackerCount);
+        
         // 隨機選擇一名攻擊方玩家
         int randomIndex = Random.Range(0, attackerCount);
-    
+        
+        Debug.Log(randomIndex);
+        
         // 給予炸彈
         int currentCount = 0;
+        
+        Debug.Log(currentCount);
+        
         for (int i = 0; i < attackerTransforms.Length; i++)
         {
+            Debug.Log(i);
             if (attackerTransforms[i])
             {
+                Debug.Log(i);
+                
                 if (currentCount == randomIndex)
                 {
-                    NetWorkPlayerControl playerControl = attackerTransforms[i].GetComponent<NetWorkPlayerControl>();
-                    playerControl.haveBomb = true;
+                    Debug.Log(i);
+                    
+                    RpcGiveBomb(attackerTransforms[i]);
+                    
                     break;
                 }
                 currentCount++;
@@ -305,62 +418,59 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    [ObserversRpc]
+    private void RpcGiveBomb(Transform player)
+    {
+        player.GetComponent<NetWorkPlayerControl>().haveBomb = true;
+    }
+    
+    
+    [Server]
+    public void CmdBombExplosion()
+    {
+        if (_team1Side == TeamSide.Attacker) _team1Win++;
+        else _team2Win++;
+        RpcSetPlayerWin(_team1Win,_team2Win);
+        _gameState = State.Wait;
+        time = waitTime ;
+        Invoke(nameof(DespawnDestroyBomb),9f);
+        RpcSetPlayersTimeOrBombUi("Time");
+    }
+    
+    [Server]
     public void BombDefused()
     {
         if (_team1Side == TeamSide.Defender) _team1Win++;
         else _team2Win++;
-        SetPlayerWin();
+        RpcSetPlayerWin(_team1Win,_team2Win);
         _gameState = State.Wait;
-        time = waitTime + 1;
-        _isBombExplosionOrDefused = true;
+        time = waitTime ;
+        isBombExplosionOrDefused = true;
+        Invoke(nameof(DespawnDestroyBomb),9f);
+        RpcSetPlayersTimeOrBombUi("Time");
+    }
 
-        bomb = null;
-
-        SetPlayersTimeOrBombUi("Time");
+    [Server]
+    private void DespawnDestroyBomb()
+    {
+        Despawn(_bomb);
+        Destroy(_bomb);
     }
     
     
-
-    private void ResetBombStatus(Transform[] playerTransforms)
+    [ObserversRpc]
+    private void ResetBombStatus()
     {
-        foreach (var player in playerTransforms)
-        {
-            if (player)
-            {
-                NetWorkPlayerControl playerControl = player.GetComponent<NetWorkPlayerControl>();
-                playerControl.haveBomb = false;
-            }
-        }
-    }
-
-    public void SetPlayersTimeOrBombUi( string state)
-    {
-        SetPlayerTimeOrBombUi(team1PlayerTransforms, state);
-        SetPlayerTimeOrBombUi(team2PlayerTransforms,state);
+        GameObject.Find("MyPlayer").GetComponent<NetWorkPlayerControl>().haveBomb = false;
     }
     
-    private void SetPlayerTimeOrBombUi(Transform[] playerTransforms, string state)
-    {
-        foreach (var player in playerTransforms)
-        {
-            if (!player)return;
-            if (!player.GetComponent<Ui>().time) return;
-            if  (!player.GetComponent<Ui>().bombImage) return;
-            
-            if (player && state == "bomb")
-            {
-                player.GetComponent<Ui>().bombImage.enabled = true;
-                player.GetComponent<Ui>().time.enabled = false;
-            }
-            else if (player)
-            {
-                player.GetComponent<Ui>().bombImage.enabled = false;
-                player.GetComponent<Ui>().time.enabled = true;
-            }
-        }
-    }
+    
+    
+
+    
 
 
+    [Server]
     private void Game()
     {
         if (_gameState == State.Wait && time == 0)
@@ -369,10 +479,10 @@ public class GameManager : NetworkBehaviour
         }
         else if (_gameState == State.BuyIng && time == 0)
         {
-            time = roundTime + 1;
             _gameState = State.Fighting;
             SetPlayerMove(true);
             CloseBuyMenu();
+            time = roundTime ;
         }
         else if (time == 0 && _gameState == State.Fighting)
         {
@@ -382,8 +492,18 @@ public class GameManager : NetworkBehaviour
             CheckWin();
         }
         
-        if(!bomb)time -= 1;
+        if((!_bomb || isBombExplosionOrDefused) && _readyClients.Count == ServerManager.Clients.Count) time -= 1;
         
         Invoke(nameof(Game), 1f);
+        
+        RpcGame(_gameState);
     }
+
+    [ObserversRpc]
+    private void RpcGame(State gameState)
+    {
+        _gameState = gameState;
+    }
+
+
 }

@@ -120,6 +120,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   _networkBehaviours:
   - {fileID: -8278547154120008373}
+  - {fileID: 516739131570292690}
   <SerializedRootNetworkBehaviour>k__BackingField: {fileID: 0}
   <NestedRootNetworkBehaviours>k__BackingField: []
   SerializedTransformProperties:
@@ -128,7 +129,7 @@ MonoBehaviour:
     LocalScale: {x: 1, y: 1, z: 1}
   _isNetworked: 0
   _isSpawnable: 1
-  _isGlobal: 0
+  _isGlobal: 1
   _initializeOrder: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
@@ -145,7 +146,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 0
+  <PrefabId>k__BackingField: 1
   <SpawnableCollectionId>k__BackingField: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 2043137081631953905
@@ -161,6 +162,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c081a5824ca91143aa5b8b191a31119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 1
+  _addedNetworkObject: {fileID: 4239001461445856045}
+  _networkObjectCache: {fileID: 4239001461445856045}
   severAudioSource: {fileID: 8251558610215287262}
   bombAudioSource: {fileID: -1003569957716666530}
   bombPlantingAudioClip: {fileID: 8300000, guid: 96408b70e8282ef41bc30dd9ab989d86, type: 3}
@@ -170,7 +174,7 @@ MonoBehaviour:
   explosionGameObject: {fileID: 3453090698486719979}
   explosionRadius: 15
   maxDamage: 100
-  _timeLeft: 30
+  _timeLeft: 15
   beepIntervalDefault: 1
   canBeDefused: 0
   defused: 0

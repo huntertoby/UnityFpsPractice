@@ -562,6 +562,8 @@ namespace Demo.Scripts.Runtime.Character
         {
             if (!IsOwner) return;
             
+            if(_netWorkPlayerControl.playerSide == GameManager.TeamSide.Attacker) return;
+            
             if (value.isPressed)
             {
                 _interactorUI.BombInteract();
@@ -570,9 +572,6 @@ namespace Demo.Scripts.Runtime.Character
             else
             {
                 _interactorUI.CancelBombDefuse();
-                if (_netWorkPlayerControl.severAudioSource.clip == _interactorUI.defusedAudioClip)return;
-                _netWorkPlayerControl.CmdCloseSeverAudioSource();
-                _netWorkPlayerControl.severAudioSource.Stop();
             }
         }
         

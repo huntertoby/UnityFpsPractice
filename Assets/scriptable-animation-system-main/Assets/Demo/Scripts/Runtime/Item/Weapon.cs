@@ -360,13 +360,11 @@ namespace Demo.Scripts.Runtime.Item
 
             if (_bombSetTime > _bombSetTimeNeed)
             {
-                _netWorkPlayerControl.CmdPlantedBomb();
-                
-               var bomb = Instantiate(gameObject,transform.root.position,Quaternion.LookRotation(Vector3.up));
-                
+                GameManager.Instance.CmdBombPlant(transform.root, gameObject);
+
                 OnFireReleased();
-                
-                if (_netWorkPlayerControl.mainWeaponIndex>=0)
+
+                if (_netWorkPlayerControl.mainWeaponIndex >= 0)
                 {
                     _fpsController.ChangeWeapon(_netWorkPlayerControl.mainWeaponIndex);
                 }
@@ -374,19 +372,12 @@ namespace Demo.Scripts.Runtime.Item
                 {
                     _fpsController.ChangeWeapon(_netWorkPlayerControl.secondWeaponIndex);
                 }
-
-                _netWorkPlayerControl.haveBomb = false;
                 
+                _netWorkPlayerControl.haveBomb = false;
                 _netWorkPlayerControl.severAudioSource.clip = _bomb.bombPlantedAudioClip;
                 _netWorkPlayerControl.severAudioSource.Play();
-                
-                bomb.GetComponent<Bomb>().BombStart();
-
-                _netWorkPlayerControl._gameManager.bomb = bomb.GetComponent<Bomb>();
-                
-                _netWorkPlayerControl._gameManager.SetPlayersTimeOrBombUi("bomb");
             }
-            
+
         }
         
         public override bool OnFirePressed()
@@ -410,6 +401,7 @@ namespace Demo.Scripts.Runtime.Item
                 _netWorkPlayerControl.SetMovement(false);
                 
                 _netWorkPlayerControl.severAudioSource.clip = _bomb.bombPlantingAudioClip;
+                
                 _netWorkPlayerControl.severAudioSource.Play();
                 
                 _netWorkPlayerControl.CmdPlantingBomb();
@@ -464,7 +456,8 @@ namespace Demo.Scripts.Runtime.Item
                 
                 return false;
             }
-
+            
+            if (_bomb) return false;
             
             if (_recoilAnimation != null)
             {
@@ -475,7 +468,7 @@ namespace Demo.Scripts.Runtime.Item
             {
                 _recoilPattern.OnFireEnd();
             }
-
+            
             if (_recoilAnimation.fireMode != FireMode.Burst || _bursts == 0)
             {
                 firing = false;
@@ -617,6 +610,8 @@ namespace Demo.Scripts.Runtime.Item
             var bulletInstance = Instantiate(bulletPrefab, muzzleTransform.position, Quaternion.LookRotation(shootDirection));
 
             bulletInstance.GetComponent<Bullet>().weapon = GetComponent<Weapon>();
+
+            bulletInstance.GetComponent<Bullet>().canDealDamage = true;
     
             ammo--;
             
@@ -629,10 +624,12 @@ namespace Demo.Scripts.Runtime.Item
         
 
 
-        public void ShotPeople()
+        public void ShotPeople(Transform toWho, float damage)
         {
-            Debug.Log("我射到人了");
+            Debug.Log(damage);
+            _netWorkPlayerControl.ShotPeople(toWho, damage);
         }
+    
         
         public override void OnCycleScope()
         {

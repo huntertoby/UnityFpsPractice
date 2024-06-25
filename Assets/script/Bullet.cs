@@ -19,6 +19,10 @@ public class Bullet : NetworkBehaviour
     [SerializeField] public float damage;
     
     [HideInInspector]public Weapon weapon;
+
+    public bool canDealDamage;
+
+    private bool _dealedDamage;
     private void Awake()
     {
         _bulletRigidbody = GetComponent<Rigidbody>();
@@ -29,7 +33,9 @@ public class Bullet : NetworkBehaviour
     }
     
     void OnCollisionEnter(Collision collision)
-    {
+    {   
+        Debug.Log("OnCollisionEnter");
+        
         ContactPoint contact = collision.contacts[0];
         float offset = 0.01f; // 微小偏移量
         GameObject prefab;
@@ -37,7 +43,9 @@ public class Bullet : NetworkBehaviour
         if (collision.transform.root.gameObject.CompareTag("Player"))
         {
             prefab = bloodImpactPrefab;
-            if (weapon) { weapon.ShotPeople(); }
+            if (!weapon) return;
+            if (canDealDamage) weapon.ShotPeople(collision.transform.root,damage);
+            canDealDamage = false;
         }
         else
         {

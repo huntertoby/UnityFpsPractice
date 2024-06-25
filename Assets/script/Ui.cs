@@ -56,6 +56,7 @@ public class Ui : NetworkBehaviour
     
     void Start()
     {
+        _gameManager = GameManager.Instance;
         Button1.onClick.AddListener(button1f);
         _fpsMovement = GetComponent<FPSMovement>();
         _fpsController = GetComponent<FPSController>();
@@ -69,9 +70,14 @@ public class Ui : NetworkBehaviour
         }
     }
 
-    public void SetGameManager()
+
+
+    public void CloseBuyMenu()
     {
-        _gameManager = _netWorkPlayerControl._gameManager;
+        if (!buyMenu)return;
+        buyMenu.SetActive(false);
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
 
@@ -87,11 +93,16 @@ public class Ui : NetworkBehaviour
         team2Win.text = value2;
     }
     
-    public void TimeUI()
+    public void GetTimeUI()
     {
         if (!time)return;
-        time.text = _gameManager.GetTime();
-        Invoke(nameof(TimeUI),1f);
+        GameManager.Instance.GetTime(transform);
+        Invoke(nameof(GetTimeUI),0.1f);
+    }
+
+    public void SetTimeUI(string timeText)
+    {
+        time.text = timeText;
     }
 
     public void SetUiActive(bool value)

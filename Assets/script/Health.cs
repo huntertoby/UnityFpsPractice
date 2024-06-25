@@ -14,20 +14,27 @@ public class Health : NetworkBehaviour
     [SerializeField] private float maxShield;
 
     private Bullet _preBullet;
+
+    public bool isDied;
     
     void Start()
     {
         _ui = GetComponent<Ui>();
 
     }
-
-    public void SetMaxHealth()
+    
+    [Server]
+    public void ServerSetMaxHealth()
     {
         health = maxHealth; 
         shield = maxShield;
+        RpcUpdateHealthAndShield(shield, health);
     }
+    
+    [Server]
     public void GotDamage(float damage)
     {
+        Debug.Log(damage);
         if (shield > 0)
         {
             if (shield >= damage)
@@ -51,40 +58,16 @@ public class Health : NetworkBehaviour
         {
             health = 0;
         }
-
-        UpdateTwoBar();
+        RpcUpdateHealthAndShield(shield, health);
+        Debug.Log(shield + " " + health);
     }
-
-    public void GotShot(Bullet bullet)
+    
+    [ObserversRpc]
+    public void RpcUpdateHealthAndShield(float newShield, float newHealth)
     {
-        if (_preBullet == bullet) return;
-        _preBullet = bullet;
-        
-        float damage = bullet.damage;
-        if (shield > 0)
-        {
-            if (shield >= damage)
-            {
-                shield -= damage;
-                damage = 0;
-            }
-            else
-            {
-                damage -= shield;
-                shield = 0;
-            }
-        }
-
-        if (damage > 0)
-        {
-            health -= damage;
-        }
-
-        if (health<0)
-        {
-            health = 0;
-        }
-
+        Debug.Log(newShield +" "+newHealth);
+        shield = newShield;
+        health = newHealth;
         UpdateTwoBar();
     }
 
@@ -92,11 +75,17 @@ public class Health : NetworkBehaviour
     {
         if (!IsOwner)return;
         _ui.SethHealthAndShield(shield/maxShield,health/maxHealth);
-        if (health == 0)
+        if (health == 0 && !isDied)
         {
             GetComponent<NetWorkPlayerControl>().SetDie();
+            isDied = true;
         }
     }
+    
+
+    
+
+
     
     
 }

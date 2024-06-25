@@ -7,24 +7,26 @@ using UnityEngine;
 public class Bodyhurt : MonoBehaviour
 {
     // Start is called before the first frame update
-    private Health _health;
+    private NetWorkPlayerControl _netWorkPlayerControl ;
     
     void Start()
     {
-        _health = GetComponentInParent<Health>();
+        _netWorkPlayerControl = GetComponentInParent<NetWorkPlayerControl>();
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        Bullet bullet = other.gameObject.GetComponent<Bullet>();
-        
-        NetworkObject networkObject = transform.root.GetComponent<NetworkObject>();
-        
-        Debug.Log("GotHurt");
-        
-        if (bullet)
-        {
-            _health.GotShot(bullet);
-        }
+        // if (transform.root.GetComponent<NetworkObject>().IsOwner) return;
+        //
+        // Bullet bullet = other.gameObject.GetComponent<Bullet>();
+        //
+        // NetworkObject networkObject = transform.root.GetComponent<NetworkObject>();
+        //
+        // Debug.Log("GotHurt");
+        //
+        // if (bullet)
+        // {
+        //     _netWorkPlayerControl.CmdGotDamage(bullet.damage);
+        // }
     }
 }

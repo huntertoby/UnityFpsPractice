@@ -6,13 +6,39 @@
   <component name="ChangeListManager">
     <list default="true" id="a99b7598-10fc-414b-9a99-0ee59d8b961d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.FpsFrameWorkFishNet 4.5/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.FpsFrameWorkFishNet 4.5/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Asset/LowPolyFPSBundle/LowPolyFPS6/LowPolyFPS6/Prefabs/Text/Team1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Asset/LowPolyFPSBundle/LowPolyFPS6/LowPolyFPS6/Prefabs/Text/Team1.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Asset/LowPolyFPSBundle/LowPolyFPS6/LowPolyFPS6/Prefabs/Text/Team2.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Asset/LowPolyFPSBundle/LowPolyFPS6/LowPolyFPS6/Prefabs/Text/Team2.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DefaultPrefabObjects.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DefaultPrefabObjects.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/Player.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/Player.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefab/PrefabObjects.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefab/PrefabObjects.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/LowPolyFPS6_Demo.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/LowPolyFPS6_Demo.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/Bodyhurt.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/Bodyhurt.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/Bullet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/Bullet.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/ClientStarter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/ClientStarter.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/script/GameManger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/GameManger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/Health.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/Health.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/InteractorUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/InteractorUI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/Map.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/Map.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/script/NetWorkPlayerControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/NetWorkPlayerControl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/PlayerSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/PlayerSpawner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/SeverStarter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/SeverStarter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/Ui.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/Ui.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/UiSever.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/UiSever.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/script/bomb.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/script/bomb.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Character/FPSController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Character/FPSController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Item/Weapon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/scriptable-animation-system-main/Assets/Demo/Scripts/Runtime/Item/Weapon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/weapon/Bumb/C4.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/weapon/Bumb/C4.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/Managed/Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/Managed/Assembly-CSharp.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/boot.config" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/boot.config" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/globalgamemanagers" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/globalgamemanagers" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/globalgamemanagers.assets" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/globalgamemanagers.assets" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/level0" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/level0" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/resources.assets" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/resources.assets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/sharedassets0.assets" beforeDir="false" afterPath="$PROJECT_DIR$/Hunter's FPS v0.1/Hunter's Fps_Data/sharedassets0.assets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.probuilder/Settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/default-2022.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/default-2022.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +78,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CodeLensConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -125,6 +152,11 @@
       <workItem from="1719091090242" duration="44966000" />
       <workItem from="1719139513669" duration="1852000" />
       <workItem from="1719141717881" duration="1204000" />
+      <workItem from="1719151535058" duration="10782000" />
+      <workItem from="1719163348824" duration="1934000" />
+      <workItem from="1719200922180" duration="31527000" />
+      <workItem from="1719233287782" duration="20034000" />
+      <workItem from="1719289763400" duration="50355000" />
     </task>
     <servers />
   </component>

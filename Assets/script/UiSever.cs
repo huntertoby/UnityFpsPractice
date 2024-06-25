@@ -7,175 +7,191 @@ using UnityEngine.UI;
 
 public class UiSever : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    
     private int _index = -1;
 
     private ButtonType _buttonType = ButtonType.No;
     private enum ButtonType
     {
-        Attacker,Defender,No
+        Attacker, Defender, No
     }
-    
-    private Button[] _attackerButton;
-    private Button[] _defenderButton;
-    private TMP_InputField _inputField;
-    private Button _prepare;
 
-    private Button _startButton;
+    [SerializeField] public Button[] attackerButton;
+    [SerializeField] public Button[] defenderButton;
+    [SerializeField] public TMP_InputField inputField;
+    [SerializeField] public Button prepare;
+    [SerializeField] public Button startButton;
 
-    private bool _prepared;
+    private bool prepared;
 
-    [HideInInspector]public Transform player;
+    public Transform player;
 
-    private GameManager gameManager;
-    
+    private GameManager _gameManager;
+
     private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        _attackerButton = gameManager.attackerButton;
-        _defenderButton = gameManager.defenderButton;
-        _inputField = gameManager.inputField;
-        _prepare = gameManager.prepare;
-        _startButton = gameManager.startButton;
-        
-        _startButton.interactable = false;
-        
-        _prepare.onClick.AddListener(PrePare);
-        _startButton.onClick.AddListener(StartPlay);
-        
+        _gameManager = GameManager.Instance;
+        startButton.interactable = false;
+        prepare.onClick.AddListener(PrePare);
+        startButton.onClick.AddListener(StartPlay);
         for (int i = 0; i < 5; i++)
         {
-            int index = i; // 在本地變量中存儲迴圈變量
-            _attackerButton[index].onClick.AddListener(() => AttackerButtonPress(index));
+            int index = i; // Store loop variable in a local variable
+            attackerButton[index].onClick.AddListener(() => AttackerButtonPress(index));
+            defenderButton[index].onClick.AddListener(() => DefenderButtonPress(index));
         }
-        for (int i = 0; i < 5; i++)
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if (IsClient)
         {
-            int index = i; // 在本地變量中存儲迴圈變量
-            _defenderButton[index].onClick.AddListener(() => DefenderButtonPress(index));
+            CmdRequestAllButtonStates();
         }
     }
 
     private void StartPlay()
     {
-        CmdStartPlay();
-    }
-    
-    [ObserversRpc]
-    private void RpcStartPlay()
-    {        
-        gameManager.GameStart();
+        _gameManager.CmdGameStart();
     }
 
-    [ServerRpc] 
-    public void CmdStartPlay()
-    {
-        RpcStartPlay();
-    }
-    
     private void PrePare()
     {
-        _prepared = !_prepared;
-        Color color;
-        if (_prepared) color = Color.green;
-        else color = Color.red;
-        string text;
-        if (_inputField.text == "") text = "Player" + NetworkObject.OwnerId;
-        else text = _inputField.text;
-        if (_buttonType == ButtonType.Attacker) CmdAttackerButton(_index,text,color,false,player);
-        if (_buttonType == ButtonType.Defender) CmdDefenderButton(_index,text,color,false,player);
+        prepared = !prepared;
+        Color color = prepared ? Color.green : Color.red;
+        string text = inputField.text == "" ? "Player" + player.GetComponent<NetworkObject>().OwnerId : inputField.text;
+        prepare.GetComponent<Image>().color = color;
+
+        if (_buttonType == ButtonType.Attacker)
+            CmdAttackerButton(_index, text, color, false,player);
+        if (_buttonType == ButtonType.Defender)
+            CmdDefenderButton(_index, text, color, false,player);
+
+        CheckPrePare();
     }
-    
+
     private void AttackerButtonPress(int value)
     {
         if (_buttonType != ButtonType.No) ResetOldButton();
-        string text;
-        if (_inputField.text == "") text = "Player" + NetworkObject.OwnerId;
-        else text = _inputField.text;
-        
-        CmdAttackerButton(value,text,Color.red,false,player);
+        string text = inputField.text == "" ? "Player" + player.GetComponent<NetworkObject>().OwnerId : inputField.text;
+
+        CmdAttackerButton(value, text, Color.red, false,player);
         _index = value;
         _buttonType = ButtonType.Attacker;
+
+        player.GetComponent<NetWorkPlayerControl>().team = 2;
+        player.GetComponent<NetWorkPlayerControl>().teamIndex = _index;
+
+        ResetPreparedState();
+    }
+
+    private void DefenderButtonPress(int value)
+    {
+        if (_buttonType != ButtonType.No) ResetOldButton();
+        string text = inputField.text == "" ? "Player" + player.GetComponent<NetworkObject>().OwnerId : inputField.text;
+
+        CmdDefenderButton(value, text, Color.red, false,player);
+        _index = value;
+        _buttonType = ButtonType.Defender;
+
+        player.GetComponent<NetWorkPlayerControl>().team = 1;
+        player.GetComponent<NetWorkPlayerControl>().teamIndex = _index;
+
+        ResetPreparedState();
     }
 
     private void CheckPrePare()
     {
-        _startButton.interactable = true;
-        
+        startButton.interactable = true;
+
         for (int i = 0; i < 5; i++)
-        {
-            if (_attackerButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text != "Empty" &&
-                _attackerButton[i].GetComponent<Image>().color == Color.red)
+        {   
+            if (attackerButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text != "Empty" &&
+                attackerButton[i].GetComponent<Image>().color == Color.red)
             {
-                _startButton.interactable = false;
+                startButton.interactable = false;
                 return;
             }
-            if (_defenderButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text != "Empty" &&
-                _defenderButton[i].GetComponent<Image>().color == Color.red)
+            if (defenderButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text != "Empty" &&
+                defenderButton[i].GetComponent<Image>().color == Color.red)
             {
-                _startButton.interactable = false;
+                startButton.interactable = false;
                 return;
             }
         }
     }
-    
-    private void DefenderButtonPress(int value)
-    {
-        if (_buttonType != ButtonType.No) ResetOldButton();
-        string text;
-        if (_inputField.text == "") text = "Player" + NetworkObject.OwnerId; 
-        else text = _inputField.text; 
-        CmdDefenderButton(value,text,Color.red,false,player);
-        _index = value;
-        _buttonType = ButtonType.Defender;
-    }
+
 
     private void ResetOldButton()
     {
-        if (_buttonType==ButtonType.Attacker)
+        player.GetComponent<NetWorkPlayerControl>().team = 0;
+        player.GetComponent<NetWorkPlayerControl>().teamIndex = -1;
+
+        if (_buttonType == ButtonType.Attacker)
         {
-            CmdAttackerButton(_index,"Empty",Color.white,true,null);
-            _buttonType = ButtonType.No;
+            CmdAttackerButton(_index, "Empty", Color.white, true,null);
         }
-        else if(_buttonType==ButtonType.Defender)
-        { ;
-            CmdDefenderButton(_index,"Empty",Color.white,true,null);
-            _buttonType = ButtonType.No;
+        else if (_buttonType == ButtonType.Defender)
+        {
+            CmdDefenderButton(_index, "Empty", Color.white, true,null);
         }
+        _buttonType = ButtonType.No;
     }
-    
-   
-    [ObserversRpc]
-    private void RpcAttackerButton(int value,string text,Color color,bool clickable,Transform transform)
+
+    private void ResetPreparedState()
     {
-        Button button = _attackerButton[value];
-        button.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = text;
-        button.GetComponent<Image>().color = color;
-        button.interactable = clickable;
-        gameManager.team1PlayerTransforms[value] = transform;
+        prepared = false;
+        prepare.GetComponent<Image>().color = Color.red;
         CheckPrePare();
     }
 
-    [ServerRpc]
-    public void CmdAttackerButton(int value,string text,Color color,bool clickable,Transform transform)
-    {
-        RpcAttackerButton(value,text,color,clickable,transform);
-    }
-    
     [ObserversRpc]
-    private void RpcDefenderButton(int value,string text,Color color,bool clickable,Transform transform)
+    private void RpcUpdateButtonState(int buttonIndex, string text, Color color, bool isAttacker,bool clickable)
     {
-        Button button = _defenderButton[value];
+        Button button = isAttacker ? attackerButton[buttonIndex] : defenderButton[buttonIndex];
         button.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = text;
         button.GetComponent<Image>().color = color;
         button.interactable = clickable;
-        gameManager.team2PlayerTransforms[value] = transform;
         CheckPrePare();
     }
 
-    [ServerRpc]
-    public void CmdDefenderButton(int value,string text,Color color,bool clickable,Transform transform)
+    [ServerRpc(RequireOwnership = false)]
+    private void CmdRequestAllButtonStates()
     {
-        RpcDefenderButton(value,text,color,clickable,transform);
+        for (int i = 0; i < attackerButton.Length; i++)
+        {
+            Color color = attackerButton[i].GetComponent<Image>().color;
+            string text = attackerButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+            bool clickable = attackerButton[i].interactable;
+            RpcUpdateButtonState(i, text, color, true,clickable);
+        }
+
+        for (int i = 0; i < defenderButton.Length; i++)
+        {
+            Color color = defenderButton[i].GetComponent<Image>().color;
+            string text = defenderButton[i].gameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+            bool clickable = defenderButton[i].interactable;
+            RpcUpdateButtonState(i, text, color, false,clickable);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdAttackerButton(int value, string text, Color color, bool clickable,Transform player)
+    {
+        attackerButton[value].GetComponentInChildren<TextMeshProUGUI>().text = text;
+        attackerButton[value].GetComponent<Image>().color = color;
+        attackerButton[value].interactable = clickable;
+        _gameManager.team2PlayerTransforms[value] = player;
+        RpcUpdateButtonState(value, text, color, true,clickable);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdDefenderButton(int value, string text, Color color, bool clickable,Transform player)
+    {
+        defenderButton[value].GetComponentInChildren<TextMeshProUGUI>().text = text;
+        defenderButton[value].GetComponent<Image>().color = color;
+        defenderButton[value].interactable = clickable;
+        _gameManager.team1PlayerTransforms[value] = player;
+        RpcUpdateButtonState(value, text, color, false,clickable);
     }
 }
