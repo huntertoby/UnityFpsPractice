@@ -9,6 +9,7 @@ using KINEMATION.FPSAnimationFramework.Runtime.Playables;
 using KINEMATION.FPSAnimationFramework.Runtime.Recoil;
 using KINEMATION.KAnimationCore.Runtime.Input;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class NetWorkPlayerControl : NetworkBehaviour
 {
@@ -21,17 +22,18 @@ public class NetWorkPlayerControl : NetworkBehaviour
     private RecoilPattern _recoilPattern;
     private FPSController _fpsController;
     private CharacterController _characterController;
-    private UiSever _uiSever;
-    private InteractorUI _interactorUI;
-    [HideInInspector]public GameManager _gameManager;
+    private Health _health;
+
+    private GameManager gameManager;
     private Ui _ui;
 
     private bool _initialized;
 
     public GameManager.TeamSide playerSide;
 
-    [HideInInspector]public int money;
+    public int money;
 
+     public string playerName;
      public int team;
      public int teamIndex;
 
@@ -44,19 +46,24 @@ public class NetWorkPlayerControl : NetworkBehaviour
 
    [SerializeField] private Transform changerCharacterTransform;
    [SerializeField] public AudioSource severAudioSource;
-
-   private Health _health;
+   
+   
+   
+    
    
     public override void OnStartClient()
     {
         base.OnStartClient();
         GameObject.Find("Canvas").GetComponent<Canvas>().enabled = false;
         if (IsOwner) gameObject.name = "MyPlayer";
-        _uiSever = GetComponent<UiSever>();
-        _gameManager = GameManager.Instance;
-        _gameManager.teamUi.SetActive(true);
-        if (IsOwner)_gameManager.GetComponent<UiSever>().player = transform;
+        gameManager = GameManager.Instance;
+        gameManager.teamUi.SetActive(true);
+        if (IsOwner)gameManager.GetComponent<UiSever>().player = transform;
         SetCanvas();
+        
+        mainWeaponIndex = -1;
+        secondWeaponIndex = 0;
+        meleeWeaponIndex = -1;    
         
         // Test();
         
@@ -65,13 +72,21 @@ public class NetWorkPlayerControl : NetworkBehaviour
         //     var prefab = NetworkManager.SpawnablePrefabs.GetObject(true, i);
         //     Debug.Log($"Prefab [{i}]: {prefab.name}");
         // }
-
-        
     }
 
     private void Start()
     {
-
+        _userInputController = GetComponent<UserInputController>();
+        _fpsAnimator = GetComponent<FPSAnimator>();
+        _recoilAnimation = GetComponent<RecoilAnimation>();
+        _fpsMovement = GetComponent<FPSMovement>();
+        _playerInput = GetComponent<PlayerInput>();
+        _fpsPlayablesController = GetComponent<FPSPlayablesController>();
+        _recoilPattern = GetComponent<RecoilPattern>();
+        _fpsController = GetComponent<FPSController>();
+        _characterController = GetComponent<CharacterController>();
+        _health = GetComponent<Health>();
+        _ui = GetComponent<Ui>();
     }
 
     private void Test()
@@ -83,18 +98,6 @@ public class NetWorkPlayerControl : NetworkBehaviour
 
     public void InitializedPlayer(bool value)
     {
-        _userInputController = GetComponent<UserInputController>();
-        _fpsAnimator = GetComponent<FPSAnimator>();
-        _recoilAnimation = GetComponent<RecoilAnimation>();
-        _fpsMovement = GetComponent<FPSMovement>();
-        _playerInput = GetComponent<PlayerInput>();
-        _fpsPlayablesController = GetComponent<FPSPlayablesController>();
-        _recoilPattern = GetComponent<RecoilPattern>();
-        _fpsController = GetComponent<FPSController>();
-        _characterController = GetComponent<CharacterController>();
-        _ui = GetComponent<Ui>();
-        _interactorUI = GetComponent<InteractorUI>();
-        _health = GetComponent<Health>();
         _userInputController.enabled = value;
         _fpsAnimator.enabled = value;
         _recoilAnimation.enabled = value;
@@ -105,13 +108,7 @@ public class NetWorkPlayerControl : NetworkBehaviour
         _fpsController.enabled = value;
         _characterController.enabled = value;
         if (IsOwner) _ui.SetUiActive(value);
-
-        mainWeaponIndex = -1;
-        secondWeaponIndex = 0;
-        meleeWeaponIndex = -1;    
-        
         CameraSetInitialize();
-        
         _initialized = true;
     }
     
@@ -119,50 +116,20 @@ public class NetWorkPlayerControl : NetworkBehaviour
     {
         if (!IsOwner)return;
         _ui.SetUiActive(false);
-        transform.position = GameObject.Find("DieTransform").transform.position;
-        _gameManager.PlayerDie(team);
         InitializedPlayer(false);
         CameraSet(false);
+        mainWeaponIndex = -1;
+        secondWeaponIndex = 0;
+        meleeWeaponIndex = -1;    
     }
     
-    [ObserversRpc]
-    private void RpcBuyWeapon(int index,int type)
-    {
-        if (!IsOwner)
-        {
-            if (type == 1)
-            {
-                mainWeaponIndex = index;
-                _fpsController.ChangeWeapon(index);
-            }else if (type == 2)
-            {
-                secondWeaponIndex = index;
-                _fpsController.ChangeWeapon(index);
-            }else if (type == 3)
-            {
-                meleeWeaponIndex = index;
-                _fpsController.ChangeWeapon(index);
-            }
-
-        }
-    }
-    
-
-
-    [ServerRpc]
-    private void CmdBuyWeapon(int index,int type)
-    {
-        RpcBuyWeapon(index,type);
-    }
-    
-    public void ShotPeople(Transform toWho, float damage)
+    public void ShotPeople(Transform who,Transform toWho, float damage)
     {
         if(!IsOwner) return;
-        Debug.Log(damage);
-        _gameManager.CmdDealDamage(toWho, damage);
+        gameManager.CmdDealDamage(who,toWho, damage);
     }
     
-    public void BuyWeapon(int index,int type)
+    public void BuyWeapon(int index,int type,int weaponMoney)
     {
         if (!IsOwner)return;
             
@@ -179,8 +146,8 @@ public class NetWorkPlayerControl : NetworkBehaviour
             meleeWeaponIndex = index;
             _fpsController.ChangeWeapon(index);
         }
-
-        CmdBuyWeapon(index,type);
+        
+        gameManager.CmdGiveMoney(transform,-1*weaponMoney);
     }
     
     public void SetMovement(bool value)
@@ -278,5 +245,12 @@ public class NetWorkPlayerControl : NetworkBehaviour
     public void CmdPlantingBomb()
     {
         RpcPlantBomb();
+    }
+    
+    
+    public void SetShield(float shield,int cost)
+    {
+         _health.SeverSetShield(shield);
+         gameManager.CmdGiveMoney(transform,-1*cost);
     }
 }

@@ -77,6 +77,8 @@ namespace Demo.Scripts.Runtime.Character
 
         private Ui _ui;
 
+        private BuyWeaponMenu _buyWeaponMenu;
+
         public bool firing;
 
         private void PlayTransitionMotion(FPSAnimatorLayerSettings layerSettings)
@@ -180,6 +182,7 @@ namespace Demo.Scripts.Runtime.Character
             _recoilPattern = GetComponent<RecoilPattern>();
             _netWorkPlayerControl = GetComponent<NetWorkPlayerControl>();
             _interactorUI = GetComponent<InteractorUI>();
+            _buyWeaponMenu = GetComponent<BuyWeaponMenu>();
             
 
             InitializeMovement();
@@ -227,7 +230,7 @@ namespace Demo.Scripts.Runtime.Character
         private void OnFirePressed()
         {
             if (_instantiatedWeapons.Count == 0 || HasActiveAction()) return;
-            if (_ui.buyMenu)if (_ui.buyMenu.activeSelf)return;
+            if (_buyWeaponMenu.buyMenu)if (_buyWeaponMenu.buyMenu.activeSelf)return;
 
             GetActiveItem().OnFirePressed();
             firing = true;
@@ -249,7 +252,6 @@ namespace Demo.Scripts.Runtime.Character
         
         private void OnSlideStarted()
         {
-
             _animator.CrossFade("Sliding", 0.1f);
         }
 
@@ -293,10 +295,8 @@ namespace Demo.Scripts.Runtime.Character
         private void StartWeaponChange(int newIndex)
         {
 
-            if (newIndex > _instantiatedWeapons.Count - 1)
-            {
-                return;
-            }
+            if (newIndex > _instantiatedWeapons.Count - 1) return;
+            if(_activeWeaponIndex == newIndex) return;
 
             UnequipWeapon();
 
@@ -353,7 +353,7 @@ namespace Demo.Scripts.Runtime.Character
         private void Update()
         {
             if (!IsOwner)return;
-            if (!_ui.buyMenu.activeSelf) UpdateLookInput();
+            if (!_buyWeaponMenu.buyMenu.activeSelf) UpdateLookInput();
             Time.timeScale = settings.timeScale;
         }
 
@@ -686,20 +686,11 @@ namespace Demo.Scripts.Runtime.Character
         public void OnBuy()
         {
             if (!IsOwner)return;
-            if(_netWorkPlayerControl._gameManager._gameState != GameManager.State.BuyIng) return;
+            if(GameManager.Instance._gameState != GameManager.State.BuyIng) return;
             
-            _ui.buyMenu.SetActive(!_ui.buyMenu.activeSelf);
-            
-            Cursor.visible = _ui.buyMenu.activeSelf;
-            
-            if (_ui.buyMenu.activeSelf)
-            {
-                Cursor.lockState = CursorLockMode.Confined;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+            if (_buyWeaponMenu.buyMenu.activeSelf) _buyWeaponMenu.CloseBuyMenu();
+            else _buyWeaponMenu.OpenBuyMenu();
+     
         }
 
         public void OnMainWeapon()

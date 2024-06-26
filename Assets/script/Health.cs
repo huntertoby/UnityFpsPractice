@@ -20,21 +20,27 @@ public class Health : NetworkBehaviour
     void Start()
     {
         _ui = GetComponent<Ui>();
-
     }
     
     [Server]
     public void ServerSetMaxHealth()
     {
         health = maxHealth; 
-        shield = maxShield;
+        RpcUpdateHealthAndShield(shield, health);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SeverSetShield(float value)
+    {
+        shield = maxShield * value;
         RpcUpdateHealthAndShield(shield, health);
     }
     
+    
     [Server]
-    public void GotDamage(float damage)
+    public void GotDamage(Transform whoDid,float damage)
     {
-        Debug.Log(damage);
+
         if (shield > 0)
         {
             if (shield >= damage)
@@ -58,28 +64,84 @@ public class Health : NetworkBehaviour
         {
             health = 0;
         }
+
+        if (whoDid.GetComponent<Bomb>())
+        {
+            Debug.Log(" 炸彈對 " 
+            + transform.GetComponent<NetWorkPlayerControl>().playerName+" 造成了 "+ damage+ " 點傷害");
+        }
+        else
+        {
+            Debug.Log(whoDid.GetComponent<NetWorkPlayerControl>().playerName + " 對 " 
+            + transform.GetComponent<NetWorkPlayerControl>().playerName+" 造成了 "+ damage+ " 點傷害");
+        }
+        
+        Debug.Log(transform.GetComponent<NetWorkPlayerControl>().playerName+ " 還剩下 Shield: " + shield + " health " + health);
+        
         RpcUpdateHealthAndShield(shield, health);
-        Debug.Log(shield + " " + health);
+        CheckIsDie(whoDid);
     }
     
     [ObserversRpc]
     public void RpcUpdateHealthAndShield(float newShield, float newHealth)
     {
-        Debug.Log(newShield +" "+newHealth);
+        Debug.Log(transform.GetComponent<NetWorkPlayerControl>().playerName+ " 還剩下 Shield: " + shield + " health " + health);
         shield = newShield;
         health = newHealth;
         UpdateTwoBar();
     }
 
-    public void UpdateTwoBar()
+    private void UpdateTwoBar()
     {
         if (!IsOwner)return;
         _ui.SethHealthAndShield(shield/maxShield,health/maxHealth);
+    }
+    
+    [Server]
+    private void CheckIsDie(Transform whoDid)
+    {
         if (health == 0 && !isDied)
         {
-            GetComponent<NetWorkPlayerControl>().SetDie();
-            isDied = true;
+            ServerIsDied(true);
+
+            if (whoDid.GetComponent<Bomb>())
+            {
+                GameManager.Instance.ServerPlayerDie(
+                    -transform.GetComponent<NetWorkPlayerControl>().team,
+                    transform,
+                    whoDid);
+            }
+            else
+            {
+                GameManager.Instance.ServerPlayerDie(
+                    transform.GetComponent<NetWorkPlayerControl>().team,
+                    transform,
+                    whoDid);
+            }
+            
+
         }
+    }
+    
+    [Server]
+    public void ServerIsDied(bool value)
+    {
+        isDied = value;
+        RpcIsDied(value);
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void CmdIsDied(bool value)
+    {
+        isDied = value;
+        RpcIsDied(value);
+    }
+    
+    [ObserversRpc]
+    private void RpcIsDied(bool value)
+    {
+        isDied = value;
+        if(value && IsOwner)GetComponent<NetWorkPlayerControl>().SetDie();
     }
     
 

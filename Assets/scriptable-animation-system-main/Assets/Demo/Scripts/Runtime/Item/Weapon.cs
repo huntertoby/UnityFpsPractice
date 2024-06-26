@@ -1,22 +1,15 @@
 // Designed by KINEMATION, 2024.
-
-using System;
 using System.Collections.Generic;
 using Demo.Scripts.Runtime.AttachmentSystem;
 using Demo.Scripts.Runtime.Character;
-using FishNet;
-using FishNet.Connection;
 using FishNet.Object;
 using KINEMATION.FPSAnimationFramework.Runtime.Camera;
 using KINEMATION.FPSAnimationFramework.Runtime.Core;
-using KINEMATION.FPSAnimationFramework.Runtime.Layers.AdsLayer;
 using KINEMATION.FPSAnimationFramework.Runtime.Layers.SwayLayer;
 using KINEMATION.FPSAnimationFramework.Runtime.Playables;
 using KINEMATION.FPSAnimationFramework.Runtime.Recoil;
 using KINEMATION.KAnimationCore.Runtime.Input;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Demo.Scripts.Runtime.Item
@@ -32,6 +25,7 @@ namespace Demo.Scripts.Runtime.Item
     {
         [Header("General")]
         [SerializeField] [Range(0f, 120f)] private float fieldOfView = 90f;
+        [SerializeField] public Texture2D weaponImage;
         
         [Header("Offset")]
         [SerializeField] public float idleOffset;
@@ -386,7 +380,7 @@ namespace Demo.Scripts.Runtime.Item
             {
                 if (!_netWorkPlayerControl.canPlant) return false;
 
-                if (_netWorkPlayerControl._gameManager._gameState == GameManager.State.BuyIng) return false;
+                if (GameManager.Instance._gameState == GameManager.State.BuyIng) return false;
                     
                 if (_ui.doingSlider&&_ui.doingText)
                 {
@@ -440,7 +434,7 @@ namespace Demo.Scripts.Runtime.Item
         {
             if (_bomb && transform.root.GetComponent<NetworkObject>().IsOwner)
             {
-                if (_netWorkPlayerControl._gameManager._gameState == GameManager.State.BuyIng) return false;
+                if (GameManager.Instance._gameState == GameManager.State.BuyIng) return false;
                 
                 if (_ui.doingSlider&&_ui.doingText)
                 {
@@ -626,8 +620,7 @@ namespace Demo.Scripts.Runtime.Item
 
         public void ShotPeople(Transform toWho, float damage)
         {
-            Debug.Log(damage);
-            _netWorkPlayerControl.ShotPeople(toWho, damage);
+            _netWorkPlayerControl.ShotPeople(transform.root,toWho, damage);
         }
     
         

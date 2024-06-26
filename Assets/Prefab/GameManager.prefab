@@ -457,15 +457,17 @@ MonoBehaviour:
   _attackerSpawnTransforms: []
   _defenderSpawnTransforms: []
   audioListener: {fileID: 0}
+  _team1Win: 0
   _team1Person: 0
+  _team2Win: 0
   _team2Person: 0
   _gameState: 0
-  buyingTime: 2
+  buyingTime: 15
   roundTime: 100
-  waitTime: 10
+  waitTime: 5
   time: 0
-  bomb: {fileID: 0}
   canvas: {fileID: 7557457114381015226}
+  isBombExplosionOrDefused: 0
 --- !u!114 &3611323876642344500
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -34,8 +34,6 @@ public class Bullet : NetworkBehaviour
     
     void OnCollisionEnter(Collision collision)
     {   
-        Debug.Log("OnCollisionEnter");
-        
         ContactPoint contact = collision.contacts[0];
         float offset = 0.01f; // 微小偏移量
         GameObject prefab;

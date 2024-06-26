@@ -133,7 +133,7 @@ public class Bomb : NetworkBehaviour
             {
                 Debug.Log("DealDamage");
                 float damage = CalculateDamage(distance);
-                GameManager.Instance.ServerDealDamage(player, damage);
+                GameManager.Instance.ServerDealDamage(transform,player, damage);
             }
         }
     }

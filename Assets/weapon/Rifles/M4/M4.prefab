@@ -709,6 +709,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 5194834931067801458}
   _networkObjectCache: {fileID: 5194834931067801458}
   fieldOfView: 90
+  weaponImage: {fileID: 2800000, guid: 8198f253a9c97004abed775ea24958d2, type: 3}
   idleOffset: 1
   walkOffset: 5
   airOffset: 10
@@ -741,7 +742,6 @@ MonoBehaviour:
   scopeGroups:
   - attachments:
     - {fileID: 4417402699743662954}
-  isBomb: 0
   firing: 0
 --- !u!114 &5194834931067801458
 MonoBehaviour:

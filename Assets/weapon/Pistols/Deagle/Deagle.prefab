@@ -98,6 +98,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 3668129012655851734}
   _networkObjectCache: {fileID: 3668129012655851734}
   fieldOfView: 90
+  weaponImage: {fileID: 2800000, guid: 8e90a780600cd4e449e6df1713378b73, type: 3}
   idleOffset: 1
   walkOffset: 5
   airOffset: 10

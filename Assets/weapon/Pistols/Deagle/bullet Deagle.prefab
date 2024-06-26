@@ -9909,8 +9909,9 @@ MonoBehaviour:
   bulletHoleImpactPrefab: {fileID: 100006, guid: 9e95c7b2183a4f345aaf86846f8f1918, type: 3}
   bloodImpactPrefab: {fileID: 1036925697551712, guid: a845e59c374ae0240812749e46f13033, type: 3}
   bulletSpeed: 1000
-  damage: 6
+  damage: 8
   weapon: {fileID: 0}
+  canDealDamage: 0
 --- !u!114 &594009761477012136
 MonoBehaviour:
   m_ObjectHideFlags: 0

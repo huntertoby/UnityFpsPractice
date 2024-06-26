@@ -72,6 +72,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4239001461445856045}
   _networkObjectCache: {fileID: 4239001461445856045}
   fieldOfView: 90
+  weaponImage: {fileID: 2800000, guid: f9c6bb40e2c7fd245a8da34ca18a90d4, type: 3}
   idleOffset: 0
   walkOffset: 0
   airOffset: 0
@@ -174,7 +175,7 @@ MonoBehaviour:
   explosionGameObject: {fileID: 3453090698486719979}
   explosionRadius: 15
   maxDamage: 100
-  _timeLeft: 15
+  _timeLeft: 3
   beepIntervalDefault: 1
   canBeDefused: 0
   defused: 0
