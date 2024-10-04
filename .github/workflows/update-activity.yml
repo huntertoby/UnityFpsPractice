@@ -16,5 +16,5 @@ jobs:
       - name: Update README with activity
         uses: TheDanniCraft/activity-log@v1
         with:
-          username: "huntertoby"
+          username: huntertoby
           token: ${{ secrets.ACTIONSECRET2024 }}
