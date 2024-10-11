@@ -1,20 +1,24 @@
-name: Update README
+# .github/workflows/update-activity.yml:
+
+name: Update GitHub Activity
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # 每天午夜自動執行
-  workflow_dispatch:  # 允許手動觸發
+#  schedule:
+#    - cron: "*/30 * * * *" # Runs every 30 minutes
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
-  update-readme:
+  update-activity:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Check out the repository code
-        uses: actions/checkout@v4
-
-      - name: Update README with activity
-        uses: TheDanniCraft/activity-log@v1
+      - uses: actions/checkout@v4
+      - name: Update activity log
+        uses: raymundlin/activity-log@v10
         with:
-          GITHUB_USERNAME: huntertoby 
-          GITHUB_TOKEN: ${{ secrets.ACTIONSECRET2024 }}  
+          GITHUB_USERNAME: "huntertoby"
+          GITHUB_TOKEN: ${{ secrets.ACTIONSECRET2024 }}
+          TARGET_REPOS: '[huntertoby/unityFpsPractice]'
+          EVENT_LIMIT: '100'
