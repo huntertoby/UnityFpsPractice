@@ -11,4 +11,9 @@
 8. 📝 Committed to [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice/commit/7087b70b73e73fed846a9ee1cabeda1266ad595f)
 9. 📝 Committed to [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice/commit/1b8114069af9070479b04b4d2df91f4fd3645bc1)
 10. 📝 Committed to [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice/commit/3cf74b27f243f0c8ee0fa9c1f6f0399802f6b599)
+11. 📝 Committed to [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice/commit/3f7c418b5288c69904805aca8693e8524486f7ff)
+12. ➕ Created a new branch [`3-as-repo-owner-i-want-github-to-automatically-update-readme-to-include-recent-activities`](https://github.com/huntertoby/UnityFpsPractice/tree/3-as-repo-owner-i-want-github-to-automatically-update-readme-to-include-recent-activities) in [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice)
+13. 🆕 Opened an issue [#3](https://github.com/huntertoby/UnityFpsPractice/issues/3) in [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice)
+14. ❌ Closed an issue [#2](https://github.com/huntertoby/UnityFpsPractice/issues/2) in [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice)
+15. 🆕 Opened an issue [#2](https://github.com/huntertoby/UnityFpsPractice/issues/2) in [huntertoby/UnityFpsPractice](https://github.com/huntertoby/UnityFpsPractice)
 <!--END_SECTION:activity-->
