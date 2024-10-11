@@ -20,5 +20,5 @@ jobs:
         with:
           GITHUB_USERNAME: "huntertoby"
           GITHUB_TOKEN: ${{ secrets.ACTIONSECRET2024 }}
-          TARGET_REPOS: '[huntertoby/unityFpsPractice]'
+          TARGET_REPOS: '[huntertoby/UnityFpsPractice]'
           EVENT_LIMIT: '100'
